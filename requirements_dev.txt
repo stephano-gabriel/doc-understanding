@@ -1,0 +1,8 @@
+aiohttp
+google-genai
+pandas
+pyarrow
+pydantic
+pypdf
+python-dotenv
+marimo
