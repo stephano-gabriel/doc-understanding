@@ -8,6 +8,10 @@ A Python tool to extract structured numerical data from PDFs and HTML files usin
    ```bash
    pip install -r requirements.txt
    ```
+   *Note: For development, debugging, and visualization tools like [Marimo notebooks](https://marimo.io/), you can install the development dependencies instead:*
+   ```bash
+   pip install -r requirements_dev.txt
+   ```
 
 2. **Configure Environment**:
    Create a `.env` file in the project root and add your Google API Key.
