@@ -60,20 +60,31 @@ def doc_browser(mo, os, upload):
 
     os.makedirs("outputs", exist_ok=True)
 
-    doc_browser = mo.ui.file_browser(
-        initial_path="outputs",
-        filetypes=[".pdf", ".html", ".txt"],
-        restrict_navigation=True,
-        multiple=False,
+    _valid_exts = {".pdf", ".html", ".txt"}
+    _available_docs = []
+
+    if os.path.exists("outputs"):
+        for _f_name in os.listdir("outputs"):
+            if (
+                not _f_name.endswith("_annotated.pdf")
+                and os.path.splitext(_f_name)[1].lower() in _valid_exts
+            ):
+                _available_docs.append(_f_name)
+
+    doc_dropdown = mo.ui.dropdown(
+        options=_available_docs,
+        value=_available_docs[0] if _available_docs else None,
+        searchable=True,
         label="Select document to process:",
     )
-    doc_browser
-    return (doc_browser,)
+    doc_dropdown
+    return (doc_dropdown,)
 
 
 @app.cell
-def doc_path(doc_browser):
-    doc_path = str(doc_browser.path(0)) if doc_browser.value else None
+def doc_path(doc_dropdown, os):
+    doc_fn = str(doc_dropdown.value) if doc_dropdown.value else None
+    doc_path = os.path.join("outputs", doc_fn)
     return (doc_path,)
 
 
@@ -104,9 +115,9 @@ def doc_status(doc_path, mo, os):
     elif not is_valid:
         msg = "⚠️ Selected document is an annotated version. Please select the original document."
     elif is_processed:
-        msg = f"⚠️ `{doc_path}` has already been processed. Are you sure you want to process it again?"
+        msg = f"⚠️ `{doc_fn}` has already been processed.<br>Are you sure you want to process it again?"
     else:
-        msg = f"Ready to process `{doc_path}`."
+        msg = f"Ready to process `{doc_fn}`."
 
     _layout = mo.vstack([mo.md(msg), process_btn])
     _layout
@@ -115,13 +126,56 @@ def doc_status(doc_path, mo, os):
 
 @app.cell
 async def process_status(doc_path, mo, process_btn, process_document):
-    process_status = mo.md("")
+    import sys
+
+    class ScrollableStdOut:
+        def __init__(self, height="400px"):
+            self.content = ""
+            self.height = height
+            self.original_stdout = sys.stdout
+            self.original_stderr = sys.stderr
+            self.html_str = ""
+
+        def write(self, s):
+            self.content += s
+            if '\n' in s:
+                escaped = self.content.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+                
+                # Reverse the lines so the newest logs appear at the top
+                lines = escaped.strip('\n').split('\n')
+                reversed_escaped = '\n'.join(reversed(lines))
+                
+                self.html_str = (
+                    f"<div id='log-window-container' style='height:{self.height}; overflow-y:auto; "
+                    "background-color:#1e1e1e; color:#d4d4d4; padding:10px; font-family:monospace; "
+                    "white-space:pre-wrap; border-radius:5px;'>"
+                    f"<div id='log-window-content'>{reversed_escaped}</div>"
+                    "</div>"
+                )
+                mo.output.replace(mo.Html(self.html_str))
+
+        def flush(self):
+            pass
+
+        def __enter__(self):
+            sys.stdout = self
+            sys.stderr = self
+            return self
+
+        def __exit__(self, exc_type, exc_val, exc_tb):
+            sys.stdout = self.original_stdout
+            sys.stderr = self.original_stderr
+
+    process_status = mo.md("")    
 
     if process_btn.value and doc_path and not doc_path.endswith("_annotated.pdf"):
-        with mo.status.spinner(f"Processing {doc_path}..."):
-            with mo.redirect_stdout(), mo.redirect_stderr():
-                await process_document(input_file=doc_path)
-        process_status = mo.md(f"✅ Finished processing `{doc_path}`")
+        with ScrollableStdOut() as log_window:
+            await process_document(input_file=doc_path)
+        
+        process_status = mo.vstack([
+            mo.md(f"✅ **Finished processing `{doc_path}`**"),
+            mo.Html(log_window.html_str)
+        ])
     process_status
     return
 
