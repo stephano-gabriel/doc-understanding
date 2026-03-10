@@ -5,6 +5,34 @@ import pandas as pd
 from extractor import extract_from_file
 from schemas import DataPoint
 
+def generate_dataframe_outputs(data_points: list[dict], base_output_path: str) -> list[str]:
+    """Generates CSV, Excel, and Parquet outputs from data points."""
+    generated_files = []
+    if not data_points:
+        return generated_files
+        
+    try:
+        df = pd.DataFrame(data_points)
+        
+        csv_output_file = f"{base_output_path}.csv"
+        df.to_csv(csv_output_file, index=False)
+        generated_files.append(csv_output_file)
+        
+        xlsx_output_file = f"{base_output_path}.xlsx"
+        df.to_excel(xlsx_output_file, index=False, engine='openpyxl')
+        generated_files.append(xlsx_output_file)
+        
+        df = df.convert_dtypes()
+        if 'accurate_bbox' in df.columns:
+            df['accurate_bbox'] = df['accurate_bbox'].apply(lambda x: str(x) if isinstance(x, list) else x)
+        parquet_output_file = f"{base_output_path}.parquet"
+        df.to_parquet(parquet_output_file, index=False)
+        generated_files.append(parquet_output_file)
+    except Exception as e:
+        print(f"Failed to generate dataframe-based outputs: {e}")
+        
+    return generated_files
+
 async def process_document(
     input_file: str, 
     output_file: str | None = None, 
@@ -55,26 +83,9 @@ async def process_document(
     data_points = result_dict.get("data_points", [])
     
     generated_files = [json_output_file]
-    if data_points:
-        try:
-            df = pd.DataFrame(data_points)
-            
-            csv_output_file = f"{base_output_path}.csv"
-            df.to_csv(csv_output_file, index=False)
-            generated_files.append(csv_output_file)
-            
-            xlsx_output_file = f"{base_output_path}.xlsx"
-            df.to_excel(xlsx_output_file, index=False, engine='openpyxl')
-            generated_files.append(xlsx_output_file)
-            
-            df = df.convert_dtypes()
-            if 'accurate_bbox' in df.columns:
-                df['accurate_bbox'] = df['accurate_bbox'].apply(lambda x: str(x) if isinstance(x, list) else x)
-            parquet_output_file = f"{base_output_path}.parquet"
-            df.to_parquet(parquet_output_file, index=False)
-            generated_files.append(parquet_output_file)
-        except Exception as e:
-            print(f"Failed to generate dataframe-based outputs: {e}")
+    
+    df_files = generate_dataframe_outputs(data_points, base_output_path)
+    generated_files.extend(df_files)
             
     files_str = ", ".join(generated_files)
     print(f"Extraction successful! Data saved to: {files_str}")
