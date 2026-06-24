@@ -90,11 +90,16 @@ async def extract_from_file(file_path: str, model_name: str = "gemini-3.5-flash"
                     
             usage = response.usage_metadata
             if usage:
+                prompt = usage.prompt_token_count
+                candidates = usage.candidates_token_count
                 thoughts = getattr(usage, 'thoughts_token_count', 0) or 0
+                total = usage.total_token_count
+                print(f"Page {i+1} Token Consumption:")
                 if thoughts > 0:
-                    print(f"Page {i+1} Token Consumption - Prompt: {usage.prompt_token_count}, Candidates: {usage.candidates_token_count}, Thoughts: {thoughts}, Total: {usage.total_token_count}")
+                    print(f"  Details -> Prompt: {prompt}, Candidates: {candidates}, Thoughts: {thoughts}")
                 else:
-                    print(f"Page {i+1} Token Consumption - Prompt: {usage.prompt_token_count}, Candidates: {usage.candidates_token_count}, Total: {usage.total_token_count}")
+                    print(f"  Details -> Prompt: {prompt}, Candidates: {candidates}")
+                print(f"  Totals  -> Input: {prompt}, Output: {candidates}, Total: {total}")
                 
             return res, usage
         except Exception as e:
@@ -137,10 +142,12 @@ async def extract_from_file(file_path: str, model_name: str = "gemini-3.5-flash"
                     total_thoughts_tokens += getattr(usage, 'thoughts_token_count', 0) or 0
                     total_tokens += getattr(usage, 'total_token_count', 0) or 0
                 
+        print("Total Token Consumption:")
         if total_thoughts_tokens > 0:
-            print(f"Total Token Consumption - Prompt: {total_prompt_tokens}, Candidates: {total_candidates_tokens}, Thoughts: {total_thoughts_tokens}, Total: {total_tokens}")
+            print(f"  Details -> Prompt: {total_prompt_tokens}, Candidates: {total_candidates_tokens}, Thoughts: {total_thoughts_tokens}")
         else:
-            print(f"Total Token Consumption - Prompt: {total_prompt_tokens}, Candidates: {total_candidates_tokens}, Total: {total_tokens}")
+            print(f"  Details -> Prompt: {total_prompt_tokens}, Candidates: {total_candidates_tokens}")
+        print(f"  Totals  -> Input: {total_prompt_tokens}, Output: {total_candidates_tokens}, Total: {total_tokens}")
             
         doc.close()
         return ExtractionResult(data_points=all_data_points)
@@ -169,11 +176,16 @@ async def extract_from_file(file_path: str, model_name: str = "gemini-3.5-flash"
         try:
             usage = response.usage_metadata
             if usage:
+                prompt = usage.prompt_token_count
+                candidates = usage.candidates_token_count
                 thoughts = getattr(usage, 'thoughts_token_count', 0) or 0
+                total = usage.total_token_count
+                print("Total Token Consumption:")
                 if thoughts > 0:
-                    print(f"Total Token Consumption - Prompt: {usage.prompt_token_count}, Candidates: {usage.candidates_token_count}, Thoughts: {thoughts}, Total: {usage.total_token_count}")
+                    print(f"  Details -> Prompt: {prompt}, Candidates: {candidates}, Thoughts: {thoughts}")
                 else:
-                    print(f"Total Token Consumption - Prompt: {usage.prompt_token_count}, Candidates: {usage.candidates_token_count}, Total: {usage.total_token_count}")
+                    print(f"  Details -> Prompt: {prompt}, Candidates: {candidates}")
+                print(f"  Totals  -> Input: {prompt}, Output: {candidates}, Total: {total}")
                 
             if response.parsed:
                 return response.parsed
