@@ -67,7 +67,7 @@ python main.py sample.pdf -o outputs/custom_run
 
 ### Model Selection
 
-You can select a specific Gemini model using the `--model` or `-m` flag:
+You can select a specific Gemini model using the optional `--model` or `-m` flag (which defaults to `gemini-3-flash-preview`):
 
 ```bash
 python main.py sample.pdf --model gemini-2.5-pro
