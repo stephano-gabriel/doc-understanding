@@ -91,12 +91,19 @@ See the [Gemini Models documentation](https://ai.google.dev/gemini-api/docs/mode
 
 ## Output
 
-By default, the script saves the extracted data to the `outputs/` folder, using the same filename as your input document but with a `.json` or `.csv` extension (e.g., `outputs/sample.json`).
+By default, the script saves the extracted data to the `outputs/` folder, generating all supported file formats (`.json`, `.csv`, `.xlsx`, `.parquet`, and `_annotated.pdf`) using the same base filename as your input document. 
 
-The output includes:
+For example, processing `sample.pdf` will automatically produce:
+- `outputs/sample.xlsx` (Excel spreadsheet)
+- `outputs/sample.json` (Structured JSON)
+- `outputs/sample.csv` (Flat CSV)
+- `outputs/sample.parquet` (Columnar Parquet)
+- `outputs/sample_annotated.pdf` (Visual highlights and tooltips)
+
+The extracted data points include:
 - Extracted value and unit
 - Date/Quarter reference
-- Document location (page, snippet, section/table)
+- Document location (page number, verbatim snippet, section/table name)
 
 ## Project Structure
 
