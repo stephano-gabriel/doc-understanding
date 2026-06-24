@@ -19,7 +19,7 @@ async def main():
     parser = argparse.ArgumentParser(description="Extract structured numerical data from PDF/HTML using Gemini.")
     parser.add_argument("file_path", help="Path to the PDF or HTML file to process.")
     parser.add_argument("--output", "-o", default=None, help="Path to save the output file.")
-    parser.add_argument("--model", "-m", default="gemini-3-flash-preview", help="Gemini model name to use.")
+    parser.add_argument("--model", "-m", default="gemini-3.5-flash", help="Gemini model name to use.")
     parser.add_argument("--pages", "-p", default=None, help="Specific pages to extract (e.g., '1-3,5').")
     
     args = parser.parse_args()

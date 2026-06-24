@@ -1,6 +1,6 @@
 # Gemini Document Data Extraction
 
-A Python tool to extract structured numerical data from PDFs and HTML files using Google's Gemini 3 (via generic `gemini-3-flash-preview` alias).
+A Python tool to extract structured numerical data from PDFs and HTML files using Google's Gemini models (defaults to `gemini-3.5-flash`).
 
 ## Setup
 
@@ -67,7 +67,7 @@ python main.py sample.pdf -o outputs/custom_run
 
 ### Model Selection
 
-You can select a specific Gemini model using the optional `--model` or `-m` flag (which defaults to `gemini-3-flash-preview`):
+You can select a specific Gemini model using the optional `--model` or `-m` flag (which defaults to `gemini-3.5-flash`):
 
 ```bash
 python main.py sample.pdf --model gemini-2.5-pro
@@ -75,8 +75,8 @@ python main.py sample.pdf --model gemini-2.5-pro
 
 The tool supports any model compatible with Google's GenAI SDK and Structured Outputs. Below are the recommended models you can choose from:
 
-*   **`gemini-3.5-flash`**: The latest generation, high-performance model for speed, quality, and cost efficiency.
-*   **`gemini-3-flash-preview`** (Default): Fast, cost-efficient, and optimized for structured tasks.
+*   **`gemini-3.5-flash`** (Default): The latest generation, high-performance model for speed, quality, and cost efficiency.
+*   **`gemini-3-flash-preview`**: Fast, cost-efficient, and optimized for structured tasks.
 *   **`gemini-2.5-pro`**: High reasoning capability; best for highly complex tables, long documents, and avoiding token truncation.
 *   **`gemini-2.5-flash`**: Stable, balanced choice for speed and extraction accuracy.
 *   **`gemini-2.0-flash`**: Previous generation fast model.

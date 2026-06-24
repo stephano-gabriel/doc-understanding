@@ -12,7 +12,7 @@ from schemas import ExtractionResult
 # Load environment variables
 load_dotenv()
 
-async def extract_from_file(file_path: str, model_name: str = "gemini-3-flash-preview", pages_to_extract: list[int] = None) -> ExtractionResult:
+async def extract_from_file(file_path: str, model_name: str = "gemini-3.5-flash", pages_to_extract: list[int] = None) -> ExtractionResult:
     """
     Extracts structured data from a PDF or HTML file using the new Google GenAI SDK.
     `pages_to_extract` is a list of 0-indexed page numbers.

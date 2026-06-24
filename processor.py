@@ -36,7 +36,7 @@ def generate_dataframe_outputs(data_points: list[dict], base_output_path: str) -
 async def process_document(
     input_file: str, 
     output_file: str | None = None, 
-    model_name: str = "gemini-3-flash-preview", 
+    model_name: str = "gemini-3.5-flash", 
     pages_to_extract: list[int] | None = None
 ):
     """Core extraction pipeline, extracted for programmatic usage in notebooks/scripts."""
